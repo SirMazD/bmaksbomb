@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Battleship Online</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div class="brand-mark">⚓</div>
+      <div><p class="eyebrow">ONLINE MULTIPLAYER</p><h1>BATTLESHIP</h1></div>
+      <div class="online-pill"><span></span> LIVE GAME</div>
+    </header>
+
+    <section id="lobby" class="panel lobby">
+      <div class="hero">
+        <p class="eyebrow">COMMAND YOUR FLEET</p>
+        <h2>Outsmart. Outshoot.<br><em>Sink the fleet.</em></h2>
+        <p class="muted">Create a private room and invite a friend with a code. Each player places five ships, then takes turns firing at the enemy grid.</p>
+      </div>
+      <label for="playerName">Your callsign</label>
+      <input id="playerName" maxlength="18" placeholder="Captain name" value="Captain">
+      <div class="lobby-actions">
+        <button id="createBtn" class="primary">Create a room <span>↗</span></button>
+        <div class="join-row"><input id="roomCodeInput" maxlength="6" placeholder="ROOM CODE"><button id="joinBtn" class="secondary">Join room</button></div>
+      </div>
+      <p id="lobbyError" class="error" role="alert"></p>
+      <div class="howto"><div>01 <b>Create or join</b><span>Share a room code</span></div><div>02 <b>Deploy ships</b><span>Place your fleet</span></div><div>03 <b>Take turns</b><span>Sink every enemy ship</span></div></div>
+    </section>
+
+    <section id="game" class="hidden">
+      <div class="gamebar panel">
+        <div><p class="eyebrow">ROOM CODE</p><div class="roomcode-line"><strong id="roomCode">------</strong><button id="copyCode" class="copy-btn">Copy</button></div></div>
+        <div class="phase-box"><span id="phaseLabel">WAITING</span><p id="statusMessage">Waiting for an opponent…</p></div>
+        <button id="leaveBtn" class="quiet">Leave</button>
+      </div>
+      <div id="waitingPanel" class="panel waiting-panel">
+        <div class="radar">⌁</div><h2>Waiting for your opponent</h2><p class="muted">Send them the room code above. They can join from another device or browser.</p>
+      </div>
+
+      <div id="placementPanel" class="panel hidden">
+        <div class="section-heading"><div><p class="eyebrow">PHASE 01 / DEPLOYMENT</p><h2>Place your fleet</h2></div><span id="shipCounter" class="counter">5 ships left</span></div>
+        <p class="muted">Select a ship, choose horizontal or vertical, then tap a starting cell. Ships cannot overlap.</p>
+        <div class="placement-tools"><div id="shipChoices" class="ship-choices"></div><button id="rotateBtn" class="secondary">Rotate: Horizontal ↔</button><button id="randomBtn" class="quiet">Randomize</button></div>
+        <div class="board-wrap"><div class="board-label">YOUR OCEAN</div><div id="placementBoard" class="board"></div></div>
+        <button id="readyBtn" class="primary wide" disabled>Deploy fleet</button>
+      </div>
+
+      <div id="battlePanel" class="hidden">
+        <div class="battle-intro"><p class="eyebrow">PHASE 02 / ENGAGEMENT</p><h2 id="battleTitle">Choose your target.</h2><p class="muted">Fire at a cell on the enemy grid. Your opponent cannot see your fleet.</p></div>
+        <div class="boards">
+          <div class="panel board-card"><div class="board-card-head"><div><p class="eyebrow">FRIENDLY FLEET</p><h3>Your ocean</h3></div><span class="board-status">DEFEND</span></div><div id="ownBoard" class="board"></div><div class="legend"><span><i class="ship-dot"></i> Your ship</span><span><i class="hit-dot"></i> Hit</span><span><i class="miss-dot"></i> Miss</span></div></div>
+          <div class="panel board-card target-card"><div class="board-card-head"><div><p class="eyebrow">ENEMY FLEET</p><h3>Target grid</h3></div><span class="board-status danger">ATTACK</span></div><div id="targetBoard" class="board"></div><div class="legend"><span><i class="target-dot"></i> Unfired</span><span><i class="hit-dot"></i> Hit</span><span><i class="miss-dot"></i> Miss</span></div></div>
+        </div>
+      </div>
+      <div id="finishedPanel" class="panel finished-panel hidden"><div class="trophy">🏆</div><p class="eyebrow">MISSION COMPLETE</p><h2 id="winnerText">Victory!</h2><p id="finishedMessage" class="muted"></p><button id="backToLobby" class="primary">Back to lobby</button></div>
+    </section>
+    <footer><span>BATTLESHIP ONLINE</span><span>Strategy wins wars.</span></footer>
+  </main>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="client.js"></script>
+</body>
+</html>
