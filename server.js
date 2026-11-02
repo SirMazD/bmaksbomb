@@ -20,6 +20,8 @@ const SHIPS = [
   { name: "Destroyer", size: 2 }
 ];
 
+const TOTAL_SHIP_CELLS = SHIPS.reduce((total, ship) => total + ship.size, 0);
+
 function newBoard() {
   return Array.from({ length: 10 }, () => Array(10).fill(null));
 }
@@ -126,19 +128,22 @@ function validPlacement(placements) {
   return true;
 }
 
-function remainingShips(player) {
-  const names = new Set(player.ships.map(s => s.name));
-  const hitNames = new Set();
+// Counts every individual ship section that has been hit.
+function countShipHits(player) {
+  let totalHits = 0;
 
   for (let r = 0; r < 10; r++) {
     for (let c = 0; c < 10; c++) {
-      if (player.board[r][c] && player.incomingShots[r][c] === "hit") {
-        hitNames.add(player.board[r][c]);
+      if (
+        player.board[r][c] !== null &&
+        player.incomingShots[r][c] === "hit"
+      ) {
+        totalHits++;
       }
     }
   }
 
-  return [...names].filter(n => !hitNames.has(n)).length;
+  return totalHits;
 }
 
 io.on("connection", socket => {
@@ -284,12 +289,16 @@ io.on("connection", socket => {
 
     if (shipName) {
       enemy.hits++;
-      room.message = `${shooter.name} hit a ${shipName}!`;
 
-      if (remainingShips(enemy) === 0) {
+      const totalHits = countShipHits(enemy);
+
+      room.message = `${shooter.name} hit a ${shipName}! (${totalHits}/${TOTAL_SHIP_CELLS} ship sections hit)`;
+
+      // A player wins ONLY after hitting all 17 individual ship sections.
+      if (totalHits === TOTAL_SHIP_CELLS) {
         room.phase = "finished";
         room.winnerIndex = index;
-        room.message = `${shooter.name} wins! All enemy ships have been sunk.`;
+        room.message = `${shooter.name} wins! All 17 sections of the enemy fleet have been hit.`;
       }
     } else {
       room.message = `${shooter.name} missed.`;
@@ -333,5 +342,5 @@ io.on("connection", socket => {
 });
 
 server.listen(PORT, () => {
-  console.log(`Battleship Online running on port ${PORT}`);
+  console.log("Battleship Online running on port " + PORT);
 });
